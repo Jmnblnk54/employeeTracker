@@ -19,10 +19,11 @@ const connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
     // run the start function after the connection is made to prompt the user
-    start();
+    //
 });
 
 //add, view or update 
+function start() {
 inquirer.prompt([
     {
     type: "list",
@@ -41,7 +42,7 @@ inquirer.prompt([
         .prompt({
             name: "add",
             type: "list",
-            message: "Which would you like to update?",
+            message: "Which would you like to add?",
             choices: 
             [
             "Department",
@@ -94,12 +95,30 @@ inquirer.prompt([
         })
         .then(function(anser){
             if(answer.view === "Department") {
+                return inquirer
+                .prompt({
+                    name: "viewDept",
+                    type: "input",
+                    message: "Please type the employee to view."
+                })
                 viewDept();
             }
             else if(answer.view === "Role") {
+                return inquirer
+                .prompt({
+                    name: "viewRole",
+                    type: "input",
+                    message: "Please type the role to view."
+                })          
                 viewRole();
             }
             else if(answer.view === "Employee") {
+                return inquirer
+                .prompt({
+                    name: "viewEmployee",
+                    type: "input",
+                    message: "Please type the employee to view."
+                }) 
                 viewEmployee();
             }
         })
@@ -108,12 +127,56 @@ inquirer.prompt([
         //list roles to update??
     }
 });
+};
 
-addDept
+// addDept
 
-addRole
+// addRole
 
-addEmployee
+// addEmployee
+
+function viewDept() {
+    console.log("Here is the department\n");
+    var query = connection.query(
+      "SELECT FROM department WHERE ?",
+      [
+        {
+          department: "viewDepartment"
+        }
+      ],
+      function(err, res) {
+        if (err) throw err;
+      }
+    )};
+
+function viewRole() {
+    console.log("Here is the Role\n");
+    var query = connection.query(
+      "SELECT FROM role WHERE ?",
+      [
+        {
+          role: "viewRole"
+        }
+      ],
+      function(err, res) {
+        if (err) throw err;
+      }
+    )};
+
+
+function viewEmployee() {
+    console.log("Here is the employee\n");
+    var query = connection.query(
+      "SELECT FROM employee WHERE ?",
+      [
+        {
+          employee: "viewEmployee"
+        }
+      ],
+      function(err, res) {
+        if (err) throw err;
+      }
+    )};
 
 
 
