@@ -109,6 +109,12 @@ inquirer.prompt([
     }
 });
 
+addDept
+
+addRole
+
+addEmployee
+
 
 
 app.listen(PORT, function() {
