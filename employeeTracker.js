@@ -19,7 +19,7 @@ const connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
     // run the start function after the connection is made to prompt the user
-    //
+    start();
 });
 
 //add, view or update 
@@ -58,8 +58,24 @@ inquirer.prompt([
                     type: "input",
                     message: "Please type the new Department name."
                 })
-                addDept();
+                .then(function(answer) {
+                  // when finished prompting, insert a new department into the db with that info
+                  connection.query(
+                    "INSERT INTO department SET ?",
+                    {
+                      name: answer.addDepartment,
+                    },
+                    function(err) {
+                      if (err) throw err;
+                      console.log("Your new department was created successfully!");
+    
+                      start();
+                    }
+                  );
+                })
+                
             }
+            
             else if(answer.add === "Role") {
                 return inquirer
                 .prompt({
@@ -93,7 +109,7 @@ inquirer.prompt([
             "Employee"
             ]
         })
-        .then(function(anser){
+        .then(function(answer){
             if(answer.view === "Department") {
                 return inquirer
                 .prompt({
@@ -130,10 +146,18 @@ inquirer.prompt([
 };
 
 // addDept
-
+function addDept(){
+  
+}
 // addRole
+function addRole(){
 
+}
 // addEmployee
+function addEmployee(){
+
+}
+
 
 function viewDept() {
     console.log("Here is the department\n");
@@ -147,7 +171,8 @@ function viewDept() {
       function(err, res) {
         if (err) throw err;
       }
-    )};
+    )
+};
 
 function viewRole() {
     console.log("Here is the Role\n");
@@ -161,7 +186,8 @@ function viewRole() {
       function(err, res) {
         if (err) throw err;
       }
-    )};
+    )
+};
 
 
 function viewEmployee() {
@@ -176,7 +202,8 @@ function viewEmployee() {
       function(err, res) {
         if (err) throw err;
       }
-    )};
+    )
+};
 
 
 
