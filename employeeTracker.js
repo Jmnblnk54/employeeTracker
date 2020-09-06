@@ -83,7 +83,21 @@ inquirer.prompt([
                     type: "input",
                     message: "Please type the new Role name."
                 })
-                addRole();
+                .then(function(answer) {
+                  // when finished prompting, insert a new department into the db with that info
+                  connection.query(
+                    "INSERT INTO department SET ?",
+                    {
+                      title: answer.addRole,
+                    },
+                    function(err) {
+                      if (err) throw err;
+                      console.log("Your new role was created successfully!");
+    
+                      start();
+                    }
+                  );
+                })
             }
             else if(answer.add === "Employee") {
                 return inquirer
