@@ -100,16 +100,64 @@ inquirer.prompt([
                 })
             }
             else if(answer.add === "Employee") {
+              connection.query("SELECT * FROM department", function(err, results) {
+                if (err) throw err;
+                // once you have the departments, prompt the user for which the new employee belongs to
+                inquirer
+                  .prompt([
+                    {
+                      name: "choice",
+                      type: "rawlist",
+                      choices: function() {
+                        var choiceArray = [];
+                        for (var i = 0; i < results.length; i++) {
+                          choiceArray.push(results[i].item_name);
+                        }
+                        return choiceArray;
+                      },
+                      message: "Which department does the new Employee belong to?",
+                    }
+                  ]);
                 return inquirer
                 .prompt({
-                    name: "addEmployee",
+                    name: "addEmployeeFirstName",
                     type: "input",
-                    message: "Please type the new Employee name."
+                    message: "Please type the new Employee's first name."
+                },
+                {
+                    name: "addEmployeeLastName",
+                    type: "input",
+                    message: "Please type the new Employee's last name."
+                },
+                )
+                .then(function(answer) {
+                  // when finished prompting, insert a new department into the db with that info
+                  connection.query(
+                    "INSERT INTO employee SET ?",
+                    {
+                      first_name: answer.addEmployeeFirstName,
+                      last_name: answer.addEmployeeLastName
+                    },
+                    "INSTERT INTO role SET ?",
+                    {
+                      title: answer.addEmployeeRole,
+                      salary: answer.addEmployeeSalary
+                    },
+                    "INSERT INTO department SET ?",
+                    {
+                      name: answer.addEmployeeDepartment
+                    },
+                    function(err) {
+                      if (err) throw err;
+                      console.log("Your new employee was added successfully!");
+    
+                      start();
+                    }
+                  );
                 })
-                addEmployee();
-            }
-        })
-    }
+            });
+          })
+    })
     else if(answer.addViewUpdateEmployee === "View departments, roles or employees?") {
         return inquirer
         .prompt({
@@ -156,8 +204,8 @@ inquirer.prompt([
     else if(answer.addViewUpdateEmployee === "Update employee roles?"){
         //list roles to update??
     }
-});
 };
+
 
 // addDept
 function addDept(){
