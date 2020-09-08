@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "",
+  password: "Yana5624!",
   database: "employeeTracker_DB"
 });
 
@@ -24,7 +24,7 @@ connection.connect(function(err) {
 
 //add, view or update 
 function start() {
-inquirer.prompt([
+  inquirer.prompt([
     {
     type: "list",
     message: "What would you like to do?",
@@ -35,91 +35,101 @@ inquirer.prompt([
             "Update employee roles?"
             ]
     }
-])
-.then(function(answer) {
-    if (answer.addViewUpdateEmployee === "Add a department, role or employee?") {
-        return inquirer
+  ])
+  //Add department role or employee
+    .then(function(answer) {
+      if (answer.addViewUpdate === "Add a department, role or employee?") {
+        inquirer
         .prompt({
-            name: "add",
-            type: "list",
-            message: "Which would you like to add?",
-            choices: 
-            [
+          name: "add",
+          type: "list",
+          message: "Which would you like to add?",
+          choices: [
             "Department",
             "Role",
             "Employee"
-            ]
+          ]
         })
-        .then(function(answer){
-            if (answer.add === "Department"){
-                return inquirer
-                .prompt({
-                    name: "addDepartment",
-                    type: "input",
-                    message: "Please type the new Department name."
-                })
-                .then(function(answer) {
-                  // when finished prompting, insert a new department into the db with that info
-                  connection.query(
-                    "INSERT INTO department SET ?",
-                    {
-                      name: answer.addDepartment,
-                    },
-                    function(err) {
-                      if (err) throw err;
-                      console.log("Your new department was created successfully!");
+      
+        //add department
+      .then(function(answer) {
+
+      if (answer.add === "Department") {
+        return inquirer
+          .prompt({
+            name: "addDepartment",
+            type: "input",
+            message: "Please type the new Department name."
+          })
+          .then(function (answer) {
+            // when finished prompting, insert a new department into the db with that info
+            connection.query(
+              "INSERT INTO department SET ?",
+              {
+                name: answer.addDepartment,
+              },
+              function (err) {
+                if (err)
+                  throw err;
+                console.log("Your new department was created successfully!");
+
+                start();
+              }
+            );
+          });
+      } 
+      
     
-                      start();
-                    }
-                  );
-                })
-                
-            }
-            
-            else if(answer.add === "Role") {
-                return inquirer
-                .prompt({
-                    name: "addRole",
-                    type: "input",
-                    message: "Please type the new Role name."
-                })
-                .then(function(answer) {
-                  // when finished prompting, insert a new department into the db with that info
-                  connection.query(
-                    "INSERT INTO department SET ?",
-                    {
-                      title: answer.addRole,
-                    },
-                    function(err) {
-                      if (err) throw err;
-                      console.log("Your new role was created successfully!");
-    
-                      start();
-                    }
-                  );
-                })
-            }
-            else if(answer.add === "Employee") {
-              connection.query("SELECT * FROM department", function(err, results) {
+      //add role
+      else if(answer.add === "Role") {
+        inquirer
+        .prompt({
+          name: "addRole",
+          type: "input",
+          message: "Please type the new Role name."
+        })
+      // when finished prompting, insert a new department into the db with that info
+      .then(function(answer){
+      connection.query(
+        "INSERT INTO role SET ?",
+        {
+          title: answer.addRole,
+        },
+        function (err) {
+          if (err)
+            throw err;
+          console.log("Your new role was created successfully!");
+
+          start();
+        }
+      )
+      });
+    }
+    //add employee, including their department, role and salary
+      else if(answer.add === "Employee") {
+        connection.query("SELECT * FROM department", function(err, results) {
                 if (err) throw err;
-                // once you have the departments, prompt the user for which the new employee belongs to
+                // once you have the departments, prompt the user for which department the new employee belongs to
                 inquirer
                   .prompt([
                     {
                       name: "choice",
-                      type: "rawlist",
-                      choices: function() {
-                        var choiceArray = [];
-                        for (var i = 0; i < results.length; i++) {
-                          choiceArray.push(results[i].item_name);
+                      type: "list",
+                      choices: function() 
+                      {
+                        let deptArray = [];
+                        for (var i = 0; i < results.length; i++) 
+                        {
+                          deptArray.push(results[i].item_name);
                         }
-                        return choiceArray;
+                        return deptArray;
                       },
                       message: "Which department does the new Employee belong to?",
                     }
                   ]);
                 return inquirer
-                .prompt({
+                .prompt(
+                {
                     name: "addEmployeeFirstName",
                     type: "input",
                     message: "Please type the new Employee's first name."
@@ -131,7 +141,7 @@ inquirer.prompt([
                 },
                 )
                 .then(function(answer) {
-                  // when finished prompting, insert a new department into the db with that info
+                  // when finished prompting, insert a new employee into the db with that info
                   connection.query(
                     "INSERT INTO employee SET ?",
                     {
@@ -154,11 +164,14 @@ inquirer.prompt([
                       start();
                     }
                   );
-                })
-            });
-          })
+                });
+              }
+        )}  //end of add employee function
     })
-    else if(answer.addViewUpdateEmployee === "View departments, roles or employees?") {
+    }       //end of add role, dept, emp function
+    
+  //view departments, roles, or employees
+  else if(answer.addViewUpdateEmployee === "View departments, roles or employees?") {
         return inquirer
         .prompt({
             name: "view",
@@ -171,6 +184,7 @@ inquirer.prompt([
             "Employee"
             ]
         })
+        //view department
         .then(function(answer){
             if(answer.view === "Department") {
                 return inquirer
@@ -181,6 +195,7 @@ inquirer.prompt([
                 })
                 viewDept();
             }
+            //view role
             else if(answer.view === "Role") {
                 return inquirer
                 .prompt({
@@ -190,6 +205,7 @@ inquirer.prompt([
                 })          
                 viewRole();
             }
+            //view employee
             else if(answer.view === "Employee") {
                 return inquirer
                 .prompt({
@@ -201,10 +217,17 @@ inquirer.prompt([
             }
         })
     }
-    else if(answer.addViewUpdateEmployee === "Update employee roles?"){
+    //update employee roles
+    else if(answer.addViewUpdateEmployee === "Update employee roles?")
+    {
         //list roles to update??
     }
-};
+
+  })
+}
+
+
+
 
 
 // addDept
@@ -267,9 +290,4 @@ function viewEmployee() {
     )
 };
 
-
-
-app.listen(PORT, function() {
-    console.log("App listening on PORT: " + PORT);
-  });
   
