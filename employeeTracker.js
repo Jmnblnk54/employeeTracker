@@ -120,15 +120,39 @@ function start() {
                         let deptArray = [];
                         for (var i = 0; i < results.length; i++) 
                         {
-                          deptArray.push(results[i].item_name);
+                          deptArray.push(results[i].name);
                         }
                         return deptArray;
                       },
                       message: "Which department does the new Employee belong to?",
                     }
-                  ]);
+                  ])
+                  .then(function(){
+                    connection.query("SELECT * FROM role", function(err, results){
+                      if (err) throw err;
+                  // once you have the roles, prompt the user for which role the new employee belongs to
+                      inquirer
+                        .prompt([
+                          {
+                            name: "choice",
+                            type: "list",
+                            choices: function()
+                            {
+                              let roleArray = [];
+                              for (var i = 0; i < results.length; i++)
+                              {
+                                roleArray.push(results[i].title);
+                              }
+                              return roleArray;
+                            },
+                            message: "To which Role does the new employee belong?"
+                          }
+                        ])
+                    })
+                  })
+                  .then(function() {
                 return inquirer
-                .prompt(
+                .prompt([
                 {
                     name: "addEmployeeFirstName",
                     type: "input",
@@ -139,7 +163,8 @@ function start() {
                     type: "input",
                     message: "Please type the new Employee's last name."
                 },
-                )
+                ]); 
+                })
                 .then(function(answer) {
                   // when finished prompting, insert a new employee into the db with that info
                   connection.query(
