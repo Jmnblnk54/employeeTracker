@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require('console.table');
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -146,26 +147,21 @@ function start() {
                               return roleArray;
                             },
                             message: "To which Role does the new employee belong?"
-                          }
+                          },
+                          {
+                            name: "addEmployeeFirstName",
+                            type: "input",
+                            message: "Please type the new Employee's first name."
+                          },
+                          {
+                            name: "addEmployeeLastName",
+                            type: "input",
+                            message: "Please type the new Employee's last name."
+                          },
                         ])
-                    })
-                  })
-                  .then(function() {
-                return inquirer
-                .prompt([
-                {
-                    name: "addEmployeeFirstName",
-                    type: "input",
-                    message: "Please type the new Employee's first name."
-                },
-                {
-                    name: "addEmployeeLastName",
-                    type: "input",
-                    message: "Please type the new Employee's last name."
-                },
-                ]); 
+                    });              
                 })
-                .then(function(answer) {
+                // .then(function(answer) {
                   // when finished prompting, insert a new employee into the db with that info
                   connection.query(
                     "INSERT INTO employee SET ?",
@@ -189,7 +185,7 @@ function start() {
                       start();
                     }
                   );
-                });
+                // });
               }
         )}  //end of add employee function
     })
